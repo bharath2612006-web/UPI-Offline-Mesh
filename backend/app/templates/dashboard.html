@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><title>UPI Offline Mesh</title>
+<style>body{font:15px system-ui;background:#101827;color:#e5e7eb;margin:32px}button{padding:10px;margin:5px}pre{background:#1f2937;padding:14px;overflow:auto}input{padding:8px;margin:4px}</style></head>
+<body><h1>UPI Offline Mesh — Python Demo</h1>
+<p>Deferred settlement through an encrypted, simulated device-to-device mesh.</p>
+<div><input id="sender" value="alice@offline"><input id="receiver" value="bob@offline"><input id="amount" type="number" value="500"><input id="pin" value="1234"><button onclick="send()">Inject payment</button></div>
+<button onclick="call('/api/mesh/gossip')">Run gossip round</button><button onclick="call('/api/mesh/flush')">Bridge upload</button><button onclick="call('/api/mesh/reset')">Reset mesh</button>
+<h2>Accounts</h2><pre id="accounts"></pre><h2>Mesh</h2><pre id="mesh"></pre><h2>Transactions</h2><pre id="tx"></pre><h2>Last response</h2><pre id="out"></pre>
+<script>
+async function call(path,method='POST',body=null){let r=await fetch(path,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):null});let j=await r.json();document.querySelector('#out').textContent=JSON.stringify(j,null,2);await refresh();}
+async function send(){await call('/api/demo/send','POST',{sender:sender.value,receiver:receiver.value,amount:Number(amount.value),pin:pin.value});}
+async function refresh(){for(let [id,path] of [['accounts','/api/accounts'],['mesh','/api/mesh/state'],['tx','/api/transactions']]){let r=await fetch(path);document.getElementById(id).textContent=JSON.stringify(await r.json(),null,2);}}
+refresh();
+</script></body></html>
